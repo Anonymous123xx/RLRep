@@ -10,7 +10,7 @@ The source code and dataset are opened.
 
 `src/`, `config/`, `utils/` and `smartBugs.py`: integrated the *smartBugs* tool.
 
-`similarity_compute.py` and `FastText/`: by *FastText* library, compute the *similarity*(proposed by [Gao et al.](https://ieeexplore.ieee.org/abstract/document/8979435/)) [ between the generated contract and the buggy contract. (one of the modules that make up the reward function)
+`similarity_compute.py` and `FastText/`: by *FastText* library, compute the *similarity* (proposed by [Gao et al.](https://ieeexplore.ieee.org/abstract/document/8979435/)) between the generated contract and the buggy contract. (one of the modules that make up the reward function)
 
 `entropy_compute.py` and `entropy_compute/`: by the concept of *entropy* proposed by [Ray et al.](https://ieeexplore.ieee.org/abstract/document/7886923), compute the entropy of the generated contract. (one of the modules that make up the reward function as well)
 
