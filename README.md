@@ -12,7 +12,7 @@ The source code and dataset are opened.
 
 `similarity_compute.py` and `FastText/`(download from [Google Drive](https://drive.google.com/drive/folders/19bX528bjU-v81neLxiXCQUd5ULF9OLGH?usp=sharing) because of Github upload size limit): by *FastText* library, compute the *similarity* (proposed by [Gao et al.](https://ieeexplore.ieee.org/abstract/document/8979435/)) between the generated contract and the buggy contract. (one of the modules that make up the reward function)
 
-`entropy_compute.py` and `entropy_compute/`: by the concept of *entropy* proposed by [Ray et al.](https://ieeexplore.ieee.org/abstract/document/7886923), compute the entropy of the generated contract. (one of the modules that make up the reward function as well)
+`entropy_compute.py` and `entropy_compute/`(download from [Google Drive](https://drive.google.com/drive/folders/16ry3nQlFCNu4AURlLFjorokhbOO1P-2C?usp=sharing) because of Github upload size limit): by the concept of *entropy* proposed by [Ray et al.](https://ieeexplore.ieee.org/abstract/document/7886923), compute the entropy of the generated contract. (one of the modules that make up the reward function as well)
 
 `utils2.py`: some useful methods of reward function and reinforcement learning.
 
