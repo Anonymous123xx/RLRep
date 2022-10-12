@@ -8,7 +8,7 @@ The source code and dataset are opened.
 
 `multistep_RLRep.py`: the model framework for reinforcement learning and its implementation
 
-`src/`, `config/`, `utils/` and `smartBugs.py`: integrated the *smartBugs*([Ferreira et al.](https://dl.acm.org/doi/abs/10.1145/3324884.3415298)) tool.
+`src/`, `config/`, `utils/` and `smartBugs.py`: integrated the *smartBugs* tool ([Ferreira et al.](https://dl.acm.org/doi/abs/10.1145/3324884.3415298)).
 
 `similarity_compute.py` and `FastText/`(download from [Google Drive](https://drive.google.com/drive/folders/19bX528bjU-v81neLxiXCQUd5ULF9OLGH?usp=sharing) because of Github upload size limit): by *FastText* library, compute the *similarity* (proposed by [Gao et al.](https://ieeexplore.ieee.org/abstract/document/8979435/)) between the generated contract and the buggy contract. (one of the modules that make up the reward function)
 
