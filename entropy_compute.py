@@ -18,6 +18,8 @@ def get_entropy(contract_path, use_cache):
 
     tmp_dir = "dataset_vul/newALLBUGS/tmp/tmp_function/"
     tmp_test = "dataset_vul/newALLBUGS/tmp/test_function/"
+    os.makedirs(tmp_dir, exist_ok=True)
+    os.makedirs(tmp_test, exist_ok=True)
     parser_js = "solidity-extractor/function.js"
 
     cp = subprocess.run("cd {} && node {} {} >/dev/null".format(tmp_dir, parser_js, contract_path), shell=True, stdout=subprocess.PIPE)
