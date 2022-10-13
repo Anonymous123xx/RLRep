@@ -22,7 +22,7 @@ def get_entropy(contract_path, use_cache):
     os.makedirs(tmp_test, exist_ok=True)
     parser_js = "solidity-extractor/function.js"
 
-    cp = subprocess.run("cd {} && node {} {} >/dev/null".format(tmp_dir, parser_js, contract_path), shell=True, stdout=subprocess.PIPE)
+    cp = subprocess.run("cd {} && node ../../../../{} {} >/dev/null".format(tmp_dir, parser_js, contract_path), shell=True, stdout=subprocess.PIPE)
     if cp.returncode:
         return -9999
     name = contract_path.split('/')[-1]
@@ -57,20 +57,4 @@ def get_entropy(contract_path, use_cache):
 
 
 if __name__ == '__main__':
-    import numpy as np
-    es = []
-    dir1 = 'dataset_vul/classify2/sum/'
-    for name in os.listdir(dir1):
-        path = dir1 + name
-        e = get_entropy(path, True)
-        es.append(e)
-        print(name, e)
-    emean = np.mean(es)
-
-    es2 = []
-    for name in os.listdir(dir1):
-        path = dir1 + name
-        e = get_entropy(path, False)
-        es2.append(e)
-        print(name, e)
-    emean2 = np.mean(es2)
+    pass
