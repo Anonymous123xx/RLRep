@@ -99,8 +99,8 @@ def fitness_function2(original_contract, repair_contract) -> float:
         else:
             reward -= 0.025
     cache = True
-    original_entropy = get_entropy(original_contract, cache, first=False)
-    repair_entropy = get_entropy(repair_contract, cache, first=False)
+    original_entropy = get_entropy(original_contract, cache)
+    repair_entropy = get_entropy(repair_contract, cache)
     if abs(original_entropy - 3.2) > abs(repair_entropy - 3.2):
         reward += 0.02
     else:
@@ -699,7 +699,7 @@ def choose_action(contract, action_nums, train, gitdif=False) -> float:
             if gitdif == True:
                 return -99999
             else:
-                rew = fitness_function2(contract_path, repair_path, action_nums)
+                rew = fitness_function2(contract_path, repair_path)
                 return rew
 
 def detect(original_contract, repair_contract, limited) -> tuple:
