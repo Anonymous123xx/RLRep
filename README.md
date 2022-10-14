@@ -22,7 +22,7 @@ The source code and dataset are opened.
 
 `code2ast.js` and `node_modules/`: convert source code to a preorder traversal sequence of AST.
 
-`dataset_vul/`: dataset directory
+`dataset_vul/`: unzip it to get the folder `dataset_vul/`
 
 `requirements.txt`: a file listing all the dependencies for RLRepair
 
