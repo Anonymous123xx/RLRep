@@ -34,7 +34,9 @@ The source code and dataset are opened.
 pip install -r requirements.txt
 ```
 
-2. make sure that all input files are ready: (you can refer to the format of our input files in `dataset_vul/newALLBUGS/`)
+2. Unzip `dataset_vul.rar`
+
+3. make sure that all input files are ready: (you can refer to the format of our input files in `dataset_vul/newALLBUGS/`)
 
 - mapping (map source token to index): `code_w2i.pkl`, `code_i2w.pkl`, `ast_w2i.pkl` and `ast_i2w.pkl`
 - first input: `threelines-tokenseq/`
@@ -42,14 +44,14 @@ pip install -r requirements.txt
 - data for pretraining: `pretrain/` and `pretrain_label/`
 - data for validation: `validation/`
 
-3. training and validation
+4. training and validation
 
 ```python
 # for example:
 python main.py dataset_vul/newALLBUGS
 ```
 
-4. reult
+5. result
 
 At last, result can be got in `dataset_vul/newALLBUGS/validation/result/`.
 
