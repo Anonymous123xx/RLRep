@@ -46,9 +46,12 @@ pip install -r requirements.txt
 
 4. training and validation
 
-```python
+```shell
+python main.py [model_name] [dataset_path]
 # for example:
-python main.py dataset_vul/newALLBUGS
+python main.py multistep_RLRep dataset_vul/newALLBUGS
+# or
+python main.py mutation dataset_vul/newALLBUGS
 ```
 
 5. result
