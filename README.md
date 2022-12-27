@@ -22,6 +22,8 @@ The source code and dataset are opened.
 
 `code2ast.js` and `node_modules/`: convert source code to a preorder traversal sequence of AST.
 
+`genetic.py`: the implement of the search-and-genetic-algorithm-based smart contract repair approach proposed by [Yu et al.](https://dl.acm.org/doi/abs/10.1145/3402450).
+
 `dataset_vul.tar.gz`: unzip it to get the folder `dataset_vul/`. It includes `contract/`(the source code of the buggy contract labeled with fault location), `ast/`(the preorder sequence of the abstract syntax tree of the buggy function) and `threelines-tokenseq/`(the previous line, the next line and the buggy line).
 
 `requirements.txt`: a file listing all the dependencies for RLRepair
