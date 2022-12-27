@@ -34,7 +34,7 @@ The source code and dataset are opened.
 pip install -r requirements.txt
 ```
 
-2. Unzip `dataset_vul.rar`
+2. Unzip `dataset_vul.tar.gz`
 
 3. make sure that all input files are ready: (you can refer to the format of our input files in `dataset_vul/newALLBUGS/`)
 
