@@ -4,32 +4,32 @@ var fs = require('fs');
 var path = require('path');
 
 var type0 = ['SourceUnit', 'InheritanceSpecifier', 'ElementaryTypeName', 'FunctionCall', 'ReturnStatement', 'Block', 'ExpressionStatement', 'BinaryOperation', 'ElementaryTypeNameExpression', 'EmitStatement', 'UnaryOperation', 'StateVariableDeclaration', 'IndexAccess', 'NewExpression', 'VariableDeclarationStatement', 'ArrayTypeName', 'AssemblyAssignment', 'AssemblyBlock', 'InlineAssemblyStatement', 'ForStatement', 'IfStatement', 'Mapping', 'TupleExpression', 'ThrowStatement', 'Conditional', 'AssemblyLocalDefinition', 'BreakStatement', 'ContinueStatement', 'AssemblyCase', 'AssemblySwitch', 'WhileStatement', 'AssemblyFor', 'AssemblyIf', 'FunctionTypeName', 'DoWhileStatement'];
-var type1 = ['PragmaDirective', 'StringLiteral', 'BooleanLiteral', 'HexNumber', 'DecimalNumber', 'HexLiteral']; // type, value
-var type2 = ['ImportDirective']; // type, path
-var type3 = ['ContractDefinition']; // kind, name
-var type4 = ['UserDefinedTypeName']; // type, namePath
-var type5 = ['UsingForDeclaration']; // Library, libraryName
-var type6 = ['VariableDeclaration', 'Identifier', 'FunctionDefinition', 'EventDefinition', 'ModifierDefinition', 'ModifierInvocation', 'EnumValue', 'EnumDefinition', 'StructDefinition', 'LabelDefinition', 'AssemblyFunctionDefinition']; // type, name
-var type7 = ['MemberAccess']; // type, memberName
-var type8 = ['NumberLiteral']; // type, number
-var type9 = ['AssemblyCall']; // type, functionName
+var type1 = ['PragmaDirective', 'StringLiteral', 'BooleanLiteral', 'HexNumber', 'DecimalNumber', 'HexLiteral'];  // type, value
+var type2 = ['ImportDirective'];  // type, path
+var type3 = ['ContractDefinition'];  // kind, name
+var type4 = ['UserDefinedTypeName'];  // type, namePath
+var type5 = ['UsingForDeclaration'];  // Library, libraryName
+var type6 = ['VariableDeclaration', 'Identifier', 'FunctionDefinition', 'EventDefinition', 'ModifierDefinition', 'ModifierInvocation', 'EnumValue', 'EnumDefinition', 'StructDefinition', 'LabelDefinition', 'AssemblyFunctionDefinition'];  // type, name
+var type7 = ['MemberAccess'];  // type, memberName
+var type8 = ['NumberLiteral'];  // type, number
+var type9 = ['AssemblyCall'];  // type, functionName
 
 var initial_identifier_dict = fs.readFileSync('top300_identifier_dict.txt');
 initial_identifier_dict = initial_identifier_dict.toString();
 initial_identifier_dict = JSON.parse(initial_identifier_dict);
 
 var len_top300_per_token_dict = new Array();
-for(var key in initial_identifier_dict){
+for(var key in initial_identifier_dict) {
 	len_top300_per_token_dict[key] = Object.keys(initial_identifier_dict[key]).length;
 }
 
 var filePath = path.resolve('dataset_vul/newALLBUGS/validation/function2/');
 var count_index = 1;
-fs.readdir(filePath,function(err,files){
-	if(err){
+fs.readdir(filePath,function(err,files) {
+	if(err) {
 		console.warn(err)
 	}else{
-		files.forEach(function(filename){
+		files.forEach(function(filename) {
 			console.log("processing " + count_index++ + "-th file : " + filename);
 			var filedir = path.join(filePath,filename);
 			var address = filename.replace(/\.sol/g,"");
@@ -38,7 +38,7 @@ fs.readdir(filePath,function(err,files){
 			var processedCode = code.replace(/&#39;/g,"\'");
 			try{
 				var result = parser.parse(processedCode,{loc : true});
-			}catch(err){
+			}catch(err) {
 				console.error('Failed to parse, ' + address + '\n',err);
     			return;
 			}
@@ -48,7 +48,7 @@ fs.readdir(filePath,function(err,files){
 
 			var tokenSequences = tokenizeSourceUnit(result);
 			fs.writeFileSync('dataset_vul/newALLBUGS/validation/ast/' + address + '.sol', '');
-			for(var i=0; i < tokenSequences.length; i++){
+			for(var i=0; i < tokenSequences.length; i++) {
 				fs.appendFileSync('dataset_vul/newALLBUGS/validation/ast/' + address + '.sol', tokenSequences[i] + '\r\n');
 			}
 		});
@@ -56,75 +56,75 @@ fs.readdir(filePath,function(err,files){
 });
 
 
-function preOrderTraversel(root){
-	if(typeof root == 'string' || typeof root == 'number' || root == null){
+function preOrderTraversel(root) {
+	if(typeof root == 'string' || typeof root == 'number' || root == null) {
 		return;
 	}
-	if(root instanceof Array){
+	if(root instanceof Array) {
 		// console.log();
-	}else{
-		if(root.hasOwnProperty('type')){
+	}else {
+		if(root.hasOwnProperty('type')) {
 			extractIdentifer(root);
 		}
 	}
-	for(var key in root){
+	for(var key in root) {
 		preOrderTraversel(root[key]);
 	}
 }
 
-function extractIdentifer(_AST){
-	if(type1.indexOf(_AST.type) > -1){
+function extractIdentifer(_AST) {
+	if(type1.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.value);
 		return;
 	}
 
-	if(type2.indexOf(_AST.type) > -1){
+	if(type2.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.path);
 		return;
 	}
 
-	if(type3.indexOf(_AST.type) > -1){
+	if(type3.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.kind, _AST.name);
 		return;
 	}
-	if(type4.indexOf(_AST.type) > -1){
+	if(type4.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.namePath);
 		return;
 	}
-	if(type5.indexOf(_AST.type) > -1){
+	if(type5.indexOf(_AST.type) > -1) {
 		pushIdentifierDict('Library', _AST.libraryName);
 		return;
 	}
-	if(type6.indexOf(_AST.type) > -1){
+	if(type6.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.name);
 		return;
 	}
-	if(type7.indexOf(_AST.type) > -1){
+	if(type7.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.memberName);
 		return;
 	}
-	if(type8.indexOf(_AST.type) > -1){
+	if(type8.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.number);
 		return;
 	}
-	if(type9.indexOf(_AST.type) > -1){
+	if(type9.indexOf(_AST.type) > -1) {
 		pushIdentifierDict(_AST.type, _AST.functionName);
 		return;
 	}
 }
 
-function pushIdentifierDict(key, value){
-	if(!global.identifier_dict[key].hasOwnProperty(value)){
+function pushIdentifierDict(key, value) {
+	if(!global.identifier_dict[key].hasOwnProperty(value)) {
 		global.identifier_dict[key][value] = key + '_' + (Object.keys(global.identifier_dict[key]).length - len_top300_per_token_dict[key]).toString();
 	}
 }
 
 
-function tokenizeSourceUnit(_AST){
+function tokenizeSourceUnit(_AST) {
 	var tokenSequences = [];
-	if(_AST.children.length != 0){
-		for(var i = 0; i < _AST.children.length; i++){
-			switch(_AST.children[i].type){
+	if(_AST.children.length != 0) {
+		for(var i = 0; i < _AST.children.length; i++) {
+			switch(_AST.children[i].type) {
     			case 'PragmaDirective':
         			break;
     			case 'ContractDefinition':
@@ -140,20 +140,20 @@ function tokenizeSourceUnit(_AST){
 	return tokenSequences;
 }
 
-function tokenizePragmaDirective(_AST){
+function tokenizePragmaDirective(_AST) {
 	return ('pragma' + ' ' + _AST.name + ' ' + global.identifier_dict[_AST.type][_AST.value] + ' ' + ';');
 }
 
-function tokenizeContractDefinition(_AST){
+function tokenizeContractDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (_AST.kind + ' ' + global.identifier_dict[_AST.kind][_AST.name]);
-	if(_AST.baseContracts.length != 0){
+	if(_AST.baseContracts.length != 0) {
 		tokenSequence += (' ' + 'is');
-		for(var i = 0; i < _AST.baseContracts.length; i++){
-			if(i != 0){
+		for(var i = 0; i < _AST.baseContracts.length; i++) {
+			if(i != 0) {
 				tokenSequence += (' ' + ',');
 			}
-			switch(_AST.baseContracts[i].type){
+			switch(_AST.baseContracts[i].type) {
 				case 'InheritanceSpecifier':
 					tokenSequence += tokenizeInheritanceSpecifier(_AST.baseContracts[i]);
 					break;
@@ -163,9 +163,9 @@ function tokenizeContractDefinition(_AST){
 		}
 	}
 	tokenSequence += (' ' + '{\n');
-	if(_AST.subNodes.length != 0){
-		for(var i = 0; i < _AST.subNodes.length ; i++){
-			switch(_AST.subNodes[i].type){
+	if(_AST.subNodes.length != 0) {
+		for(var i = 0; i < _AST.subNodes.length ; i++) {
+			switch(_AST.subNodes[i].type) {
 				case 'FunctionDefinition':
 					tokenSequence += (tokenizeFunctionDefinition(_AST.subNodes[i]) + '\n');
 					break;
@@ -191,25 +191,25 @@ function tokenizeContractDefinition(_AST){
 	return tokenSequence;
 }
 
-function tokenizeEventDefinition(_AST){
+function tokenizeEventDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += ('event' + ' ' + global.identifier_dict[_AST.type][_AST.name] + ' ' + '(');
-	if(_AST.parameters.length != 0){
+	if(_AST.parameters.length != 0) {
 		tokenSequence += tokenizeParameters(_AST.parameters);
 	}
 	tokenSequence += (' ' + ')');
-	if(_AST.isAnonymous != false){
+	if(_AST.isAnonymous != false) {
 		tokenSequence += (' ' + 'anonymous');
 	}
 	tokenSequence += (' ' + ';');
 	return tokenSequence;
 }
 
-function tokenizeStateVariableDeclaration(_AST){
+function tokenizeStateVariableDeclaration(_AST) {
 	var tokenSequence = '';
-	for(var i =0; i < _AST.variables.length; i++){
-		if(_AST.variables[i] != null){
-			switch(_AST.variables[i].type){
+	for(var i =0; i < _AST.variables.length; i++) {
+		if(_AST.variables[i] != null) {
+			switch(_AST.variables[i].type) {
 				case 'VariableDeclaration':
 					tokenSequence += tokenizeVariableDeclaration(_AST.variables[i]);
 					break;
@@ -221,29 +221,29 @@ function tokenizeStateVariableDeclaration(_AST){
 	return tokenSequence;
 }
 
-function tokenizeModifierDefinition(_AST){
+function tokenizeModifierDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'modifier' + ' ' + global.identifier_dict[_AST.type][_AST.name] + ' ' + '(');
-	if(_AST.parameters != null){
-		if(_AST.parameters.length != 0){
+	if(_AST.parameters != null) {
+		if(_AST.parameters.length != 0) {
 			tokenSequence += tokenizeParameters(_AST.parameters);
 		}
 	}
 	tokenSequence += (' ' + ')');
-	if(_AST.body != null){
+	if(_AST.body != null) {
 		tokenSequence += tokenizeBlock(_AST.body);
 	}
 	return tokenSequence;
 }
 
-function tokenizeStructDefinition(_AST){
+function tokenizeStructDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'struct' + ' ' + global.identifier_dict[_AST.type][_AST.name] + ' ' + '{');
-	for(var i =0; i < _AST.members.length; i++){
-		if(i != 0){
+	for(var i =0; i < _AST.members.length; i++) {
+		if(i != 0) {
 			tokenSequence += (' ' + ';');
 		}
-		switch(_AST.members[i].type){
+		switch(_AST.members[i].type) {
 			case 'VariableDeclaration':
 				tokenSequence +=tokenizeVariableDeclaration(_AST.members[i]);
 				break;
@@ -255,25 +255,25 @@ function tokenizeStructDefinition(_AST){
 	return tokenSequence;
 }
 
-function tokenizeUsingForDeclaration(_AST){
+function tokenizeUsingForDeclaration(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'using');
 	tokenSequence += (' ' + identifier_dict['Library'][_AST.libraryName]);
 	tokenSequence += (' ' + 'for');
-	if(_AST.typeName != null){
+	if(_AST.typeName != null) {
 		tokenSequence += tokenizeTypeName(_AST.typeName);
 	}
 	return tokenSequence;
 }
 
-function tokenizeEnumDefinition(_AST){
+function tokenizeEnumDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'enum' + ' ' + global.identifier_dict[_AST.type][_AST.name] + ' ' + '{');
-	for(var i =0; i < _AST.members.length; i++){
-		if(i != 0){
+	for(var i =0; i < _AST.members.length; i++) {
+		if(i != 0) {
 			tokenSequence += (' ' + ',');
 		}
-		switch(_AST.members[i].type){
+		switch(_AST.members[i].type) {
 			case 'EnumValue':
 				tokenSequence += tokenizeEnumValue(_AST.members[i]);
 				break;
@@ -285,32 +285,32 @@ function tokenizeEnumDefinition(_AST){
 	return tokenSequence;
 }
 
-function tokenizeFunctionDefinition(_AST){
+function tokenizeFunctionDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += ('function' + ' ' + global.identifier_dict[_AST.type][_AST.name] + ' ' + '(');
-	if(_AST.parameters.length != 0){
+	if(_AST.parameters.length != 0) {
 		tokenSequence += tokenizeParameters(_AST.parameters);
 	}
     tokenSequence += (' ' + ')' );
-    if(_AST.visibility != null){
+    if(_AST.visibility != null) {
     	tokenSequence += (' ' + _AST.visibility);
     }
-    if(_AST.stateMutability != null){
+    if(_AST.stateMutability != null) {
     	tokenSequence += (' ' + _AST.stateMutability);
     }
-    if(_AST.modifiers.length != 0){
-    	for(var i = 0; i < _AST.modifiers.length; i++){
+    if(_AST.modifiers.length != 0) {
+    	for(var i = 0; i < _AST.modifiers.length; i++) {
     		tokenSequence += tokenizeModifierInvocation(_AST.modifiers[i]);
     	}
 	}
-	if(_AST.returnParameters != null){
-		if(_AST.returnParameters.length != 0){
+	if(_AST.returnParameters != null) {
+		if(_AST.returnParameters.length != 0) {
     		tokenSequence += (' ' + 'returns' + ' ' + '(');
 			tokenSequence += tokenizeParameters(_AST.returnParameters);
 			tokenSequence += (' ' + ')');
 		}
 	}
-    if(_AST.body != null){
+    if(_AST.body != null) {
     	tokenSequence += tokenizeBlock(_AST.body);
     }else{
     	tokenSequence += (' ' + ';');
@@ -318,13 +318,13 @@ function tokenizeFunctionDefinition(_AST){
     return tokenSequence;
 }
 
-function tokenizeParameters(_AST){
+function tokenizeParameters(_AST) {
 	var tokenSequence = '';
-	for(var i = 0; i < _AST.length; i++){
-		if(i != 0){
+	for(var i = 0; i < _AST.length; i++) {
+		if(i != 0) {
 			tokenSequence += (' ' + ',');
 		}
-		switch(_AST[i].type){
+		switch(_AST[i].type) {
 			case 'VariableDeclaration':
 				tokenSequence += tokenizeVariableDeclaration(_AST[i]);
 				break;
@@ -338,24 +338,24 @@ function tokenizeParameters(_AST){
 	return tokenSequence;
 }
 
-function tokenizeVariableDeclaration(_AST){
+function tokenizeVariableDeclaration(_AST) {
 	var tokenSequence = '';
-	if(_AST.typeName != null){
+	if(_AST.typeName != null) {
 		tokenSequence += tokenizeTypeName(_AST.typeName);
 	}
-	if(_AST.isIndexed != false){
+	if(_AST.isIndexed != false) {
 		tokenSequence += (' ' + 'indexed');
 	}
-	if(_AST.visibility != null & _AST.visibility != 'default'){
+	if(_AST.visibility != null & _AST.visibility != 'default') {
 		tokenSequence += (' ' + _AST.visibility);
 	}
-	if(_AST.isDeclaredConst == true){
+	if(_AST.isDeclaredConst == true) {
 		tokenSequence += (' ' + 'constant');
 	}
-	if(_AST.name != null){
+	if(_AST.name != null) {
 		tokenSequence += (' ' + global.identifier_dict[_AST.type][_AST.name]);
 	}
-	if(_AST.expression != null){
+	if(_AST.expression != null) {
 		tokenSequence += (' ' + '=');
 		tokenSequence += tokenizeExpression(_AST.expression);
 	}
@@ -363,14 +363,14 @@ function tokenizeVariableDeclaration(_AST){
 	return tokenSequence;
 }
 
-function tokenizeArrayTypeName(_AST){
+function tokenizeArrayTypeName(_AST) {
 	var tokenSequence = '';
-	if(_AST.baseTypeName != null){
+	if(_AST.baseTypeName != null) {
 		tokenSequence += tokenizeTypeName(_AST.baseTypeName);
 	}
 	tokenSequence += (' ' + '[');
-	if(_AST.length != null){
-		switch(_AST.length.type){
+	if(_AST.length != null) {
+		switch(_AST.length.type) {
 			case 'NumberLiteral':
 				tokenSequence += tokenizeNumberLiteral(_AST.length);
 				break;
@@ -388,25 +388,25 @@ function tokenizeArrayTypeName(_AST){
 	return tokenSequence;
 }
 
-function tokenizeElementaryTypeName(_AST){
+function tokenizeElementaryTypeName(_AST) {
 	return (' ' + _AST.name);
 }
 
-function tokenizeNumberLiteral(_AST){
+function tokenizeNumberLiteral(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + global.identifier_dict[_AST.type][_AST.number]);
-	if(_AST.subdenomination != null){
+	if(_AST.subdenomination != null) {
 		tokenSequence += (' ' + _AST.subdenomination);
 	}
 	return tokenSequence;
 }
 
 
-function tokenizeBlock(_AST){
+function tokenizeBlock(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + '{');
-	if(_AST.statements != null){
-		for(var i = 0; i < _AST.statements.length; i++){
+	if(_AST.statements != null) {
+		for(var i = 0; i < _AST.statements.length; i++) {
 			tokenSequence += tokenizeStatement(_AST.statements[i]);
 		}
 	}
@@ -414,9 +414,9 @@ function tokenizeBlock(_AST){
 	return tokenSequence;
 }
 
-function tokenizeStatement(_AST){
+function tokenizeStatement(_AST) {
 	var tokenSequence = '';
-	switch(_AST.type){
+	switch(_AST.type) {
 		case 'VariableDeclarationStatement':
 			tokenSequence += tokenizeVariableDeclarationStatement(_AST);
 			tokenSequence += (' ' + ';');
@@ -472,16 +472,16 @@ function tokenizeStatement(_AST){
 }
 
 
-function tokenizeExpressionStatement(_AST){
+function tokenizeExpressionStatement(_AST) {
 	var tokenSequence = '';
-	if(_AST.expression != null){
+	if(_AST.expression != null) {
 		tokenSequence += tokenizeExpression(_AST.expression);
 	}
 	return tokenSequence;
 }
-function tokenizeExpression(_AST){
-	if(_AST !=  null){
-		switch(_AST.type){
+function tokenizeExpression(_AST) {
+	if(_AST !=  null) {
+		switch(_AST.type) {
 			case 'FunctionCall':
 				return tokenizeFunctionCall(_AST);
 			case 'BinaryOperation':
@@ -529,21 +529,21 @@ function tokenizeExpression(_AST){
 
 }
 
-function tokenizeIfStatement(_AST){
+function tokenizeIfStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'If' + ' ' + '(');
-	if(_AST.condition != null){
+	if(_AST.condition != null) {
 		tokenSequence += tokenizeCondition(_AST.condition);
 	}
 	tokenSequence += (')');
-	if(_AST.trueBody.type == 'Block'){
+	if(_AST.trueBody.type == 'Block') {
 		tokenSequence += tokenizeBlock(_AST.trueBody);
 	}else{
 		tokenSequence += tokenizeStatement(_AST.trueBody);
 	}
-	if(_AST.falseBody != null){
+	if(_AST.falseBody != null) {
 		tokenSequence += (' ' + 'else');
-		if(_AST.falseBody.type == 'Block'){
+		if(_AST.falseBody.type == 'Block') {
 			tokenSequence += tokenizeBlock(_AST.falseBody);
 		}else{
 			tokenSequence += tokenizeBlock(_AST.falseBody);
@@ -552,20 +552,20 @@ function tokenizeIfStatement(_AST){
 	return tokenSequence;
 }
 
-function tokenizeReturnStatement(_AST){
+function tokenizeReturnStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'return');
-	if(_AST.expression != null){
+	if(_AST.expression != null) {
 		tokenSequence += tokenizeExpression(_AST.expression);
 	}
 	return tokenSequence;
 }
 
-function tokenizeForStatement(_AST){
+function tokenizeForStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'For' + ' ' + '(');
-	if(_AST.initExpression != null){
-		switch(_AST.initExpression.type){
+	if(_AST.initExpression != null) {
+		switch(_AST.initExpression.type) {
 			case 'VariableDeclarationStatement':
 				tokenSequence += tokenizeVariableDeclarationStatement(_AST.initExpression);
 				break;
@@ -576,13 +576,13 @@ function tokenizeForStatement(_AST){
 				throw "error";
 		}
 	}
-	if(_AST.conditionExpression != null){
+	if(_AST.conditionExpression != null) {
 		tokenSequence += (' ' + ';');
 		tokenSequence += tokenizeCondition(_AST.conditionExpression);
 	}
-	if(_AST.loopExpression != null){
+	if(_AST.loopExpression != null) {
 		tokenSequence += (' ' + ';');
-		switch(_AST.loopExpression.type){
+		switch(_AST.loopExpression.type) {
 			case 'ExpressionStatement':
 				tokenSequence += tokenizeExpressionStatement(_AST.loopExpression);
 				break;
@@ -590,7 +590,7 @@ function tokenizeForStatement(_AST){
 				throw "error";
 		}
 	}
-	if(_AST.body.type == 'Block'){
+	if(_AST.body.type == 'Block') {
 		tokenSequence += tokenizeBlock(_AST.body);
 	}else{
 		tokenSequence += tokenizeStatement(_AST.body);
@@ -598,14 +598,14 @@ function tokenizeForStatement(_AST){
 	return tokenSequence;
 }
 
-function tokenizeWhileStatement(_AST){
+function tokenizeWhileStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'While' + ' ' + '(');
-	if(_AST.condition != null){
+	if(_AST.condition != null) {
 		tokenSequence += tokenizeCondition(_AST.condition);
 	}
 	tokenSequence += (')');
-	if(_AST.body.type == 'Block'){
+	if(_AST.body.type == 'Block') {
 		tokenSequence += tokenizeBlock(_AST.body);
 	}else{
 		tokenSequence += tokenizeStatement(_AST.body);
@@ -613,10 +613,10 @@ function tokenizeWhileStatement(_AST){
 	return tokenSequence;
 }
 
-function tokenizeEmitStatement(_AST){
+function tokenizeEmitStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'emit');
-	switch(_AST.eventCall.type){
+	switch(_AST.eventCall.type) {
 		case 'FunctionCall':
 			tokenSequence += tokenizeFunctionCall(_AST.eventCall);
 			break;
@@ -626,11 +626,11 @@ function tokenizeEmitStatement(_AST){
 	return tokenSequence;
 }
 
-function tokenizeInlineAssemblyStatement(_AST){
+function tokenizeInlineAssemblyStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'assembly');
-	if(_AST.body != null){
-		switch(_AST.body.type){
+	if(_AST.body != null) {
+		switch(_AST.body.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.body);
 				break;
@@ -641,22 +641,22 @@ function tokenizeInlineAssemblyStatement(_AST){
 	return tokenSequence;
 }
 
-function tokenizeContinueStatement(_AST){
+function tokenizeContinueStatement(_AST) {
 	return (' ' + 'continue' + ' ' + ';');
 }
 
-function tokenizeBreakStatement(_AST){
+function tokenizeBreakStatement(_AST) {
 	return (' ' + 'break' + ' ' + ';');
 }
 
-function tokenizeThrowStatement(_AST){
+function tokenizeThrowStatement(_AST) {
 	return (' ' + 'throw' + ' ' + ';');
 }
 
-function tokenizeArguments(_AST){
+function tokenizeArguments(_AST) {
 	var tokenSequence = '';
-	for(var i = 0; i < _AST.length; i++){
-		if(i != 0){
+	for(var i = 0; i < _AST.length; i++) {
+		if(i != 0) {
 			tokenSequence += (' ' + ',');
 		}
 		tokenSequence += tokenizeExpression(_AST[i]);
@@ -664,38 +664,38 @@ function tokenizeArguments(_AST){
 	return tokenSequence;
 }
 
-function tokenizeFunctionCall(_AST){
+function tokenizeFunctionCall(_AST) {
 	var tokenSequence = '';
 	tokenSequence += tokenizeExpression(_AST.expression);
 	tokenSequence += (' ' + '(');
-	if(_AST.arguments.length != 0){
+	if(_AST.arguments.length != 0) {
 		tokenSequence += tokenizeArguments(_AST.arguments);
 	}
 	tokenSequence += (' ' + ')');
 	return tokenSequence;
 }
 
-function tokenizeBinaryOperation(_AST){
+function tokenizeBinaryOperation(_AST) {
 	var tokenSequence = '';
-	if(_AST.left != null){
+	if(_AST.left != null) {
 		tokenSequence += tokenizeExpression(_AST.left);
 	}
 	tokenSequence += (' ' + _AST.operator);
-	if(_AST.right != null){
+	if(_AST.right != null) {
 		tokenSequence += tokenizeExpression(_AST.right);
 	}
 	return tokenSequence;
 }
 
-function tokenizeUnaryOperation(_AST){
+function tokenizeUnaryOperation(_AST) {
 	var tokenSequence = '';
-	if(_AST.isPrefix){
+	if(_AST.isPrefix) {
 		tokenSequence += (' ' + _AST.operator);
-		if(_AST.subExpression != null){
+		if(_AST.subExpression != null) {
 			tokenSequence += tokenizeExpression(_AST.subExpression);
 		}
 	}else{
-		if(_AST.subExpression != null){
+		if(_AST.subExpression != null) {
 			tokenSequence += tokenizeExpression(_AST.subExpression);
 		}
 		tokenSequence += (' ' + _AST.operator);
@@ -703,32 +703,32 @@ function tokenizeUnaryOperation(_AST){
 	return tokenSequence;
 }
 
-function tokenizeIdentifier(_AST){
+function tokenizeIdentifier(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.name]);
 }
 
-function tokenizeIndexAccess(_AST){
+function tokenizeIndexAccess(_AST) {
 	var tokenSequence = '';
-	if(_AST.base != null){
+	if(_AST.base != null) {
 		tokenSequence += tokenizeExpression(_AST.base);
 	}
 	tokenSequence += (' ' + '[');
-	if(_AST.index != null){
+	if(_AST.index != null) {
 		tokenSequence += tokenizeExpression(_AST.index);
 	}
 	tokenSequence += (' ' + ']');
 	return tokenSequence;
 }
 
-function tokenizeCondition(_AST){
+function tokenizeCondition(_AST) {
 	return tokenizeExpression(_AST);
 }
 
-function tokenizeAssemblyBlock(_AST){
+function tokenizeAssemblyBlock(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + '{');
-	for(var i=0; i < _AST.operations.length; i++){
-		switch(_AST.operations[i].type){
+	for(var i=0; i < _AST.operations.length; i++) {
+		switch(_AST.operations[i].type) {
 			case 'AssemblyAssignment':
 				tokenSequence += tokenizeAssemblyAssignment(_AST.operations[i]);
 				break;
@@ -770,7 +770,7 @@ function tokenizeAssemblyBlock(_AST){
 	return tokenSequence;
 }
 
-function tokenizeMemberAccess(_AST){
+function tokenizeMemberAccess(_AST) {
 	var tokenSequence = '';
 	tokenSequence += tokenizeExpression(_AST.expression);
 	tokenSequence += (' ' + '.');
@@ -778,28 +778,28 @@ function tokenizeMemberAccess(_AST){
 	return tokenSequence;
 }
 
-function tokenizeElementaryTypeNameExpression(_AST){
+function tokenizeElementaryTypeNameExpression(_AST) {
 	var tokenSequence = '';
-	if(_AST.typeName != null){
+	if(_AST.typeName != null) {
 		tokenSequence += tokenizeTypeName(_AST.typeName);
 	}
     return tokenSequence;
 }
 
-function tokenizeNewExpression(_AST){
+function tokenizeNewExpression(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'new');
-	if(_AST.typeName != null){
+	if(_AST.typeName != null) {
 		tokenSequence += tokenizeTypeName(_AST.typeName);
 	}
     return tokenSequence;
 }
 
-function tokenizeTupleExpression(_AST){
+function tokenizeTupleExpression(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + '(');
-	for(var i = 0; i < _AST.components.length; i++){
-		if(i != 0){
+	for(var i = 0; i < _AST.components.length; i++) {
+		if(i != 0) {
 			tokenSequence += (' ' + ',');
 		}
 		tokenSequence += tokenizeExpression(_AST.components[i]);
@@ -808,22 +808,22 @@ function tokenizeTupleExpression(_AST){
 	return tokenSequence;
 }
 
-function tokenizeStringLiteral(_AST){
+function tokenizeStringLiteral(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.value]);
 }
 
-function tokenizeBooleanLiteral(_AST){
+function tokenizeBooleanLiteral(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.value]);
 }
 
-function tokenizeLabelDefinition(_AST){
+function tokenizeLabelDefinition(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.name]);
 }
 
-function tokenizeAssemblyAssignment(_AST){
+function tokenizeAssemblyAssignment(_AST) {
 	var tokenSequence = '';
-	if(_AST.names.length != 0){
-		for(var i = 0; i < _AST.names.length; i++){
+	if(_AST.names.length != 0) {
+		for(var i = 0; i < _AST.names.length; i++) {
 			tokenSequence += ' ';
 			tokenSequence += tokenizeExpression(_AST.names[i]);
 		}
@@ -833,39 +833,39 @@ function tokenizeAssemblyAssignment(_AST){
 	return tokenSequence;
 }
 
-function tokenizeAssemblyLocalDefinition(_AST){
+function tokenizeAssemblyLocalDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'let');
-	if(_AST.names.length != 0){
-		for(var i = 0; i < _AST.names.length; i++){
+	if(_AST.names.length != 0) {
+		for(var i = 0; i < _AST.names.length; i++) {
 			tokenSequence += ' ';
 			tokenSequence += tokenizeExpression(_AST.names[i]);
 		}
 	}
-	if(_AST.expression != null){
+	if(_AST.expression != null) {
 		tokenSequence += (' ' + ':=');
 		tokenSequence += tokenizeExpression(_AST.expression);
 	}
 	return tokenSequence;
 }
 
-function tokenizeAssemblyCall(_AST){
+function tokenizeAssemblyCall(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + global.identifier_dict[_AST.type][_AST.functionName]);
 	tokenSequence += (' ' + '(');
-	if(_AST.arguments.length != 0){
+	if(_AST.arguments.length != 0) {
 		tokenSequence += tokenizeArguments(_AST.arguments);
 	}
 	tokenSequence += (' ' + ')');
 	return tokenSequence;
 }
 
-function tokenizeAssemblySwitch(_AST){
+function tokenizeAssemblySwitch(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'switch');
 	tokenSequence += tokenizeExpression(_AST.expression);
-	for(var i = 0; i < _AST.cases.length; i++){
-		switch(_AST.cases[i].type){
+	for(var i = 0; i < _AST.cases.length; i++) {
+		switch(_AST.cases[i].type) {
 			case 'AssemblyCase':
 				tokenSequence += tokenizeAssemblyCase(_AST.cases[i]);
 				break;
@@ -877,14 +877,14 @@ function tokenizeAssemblySwitch(_AST){
 	return tokenSequence;
 }
 
-function tokenizeAssemblyCase(_AST){
+function tokenizeAssemblyCase(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'case');
-	if(_AST.value != null){
+	if(_AST.value != null) {
 		tokenSequence += tokenizeExpression(_AST.value);
 	}
-	if(_AST.block != null){
-		switch(_AST.block.type){
+	if(_AST.block != null) {
+		switch(_AST.block.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.block);
 				break;
@@ -895,14 +895,14 @@ function tokenizeAssemblyCase(_AST){
 	return tokenSequence;
 }
 
-function tokenizeAssemblyIf(_AST){
+function tokenizeAssemblyIf(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'if');
-	if(_AST.condition != null){
+	if(_AST.condition != null) {
 		tokenSequence += tokenizeCondition(_AST.condition);
 	}
-	if(_AST.body != null){
-		switch(_AST.body.type){
+	if(_AST.body != null) {
+		switch(_AST.body.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.body);
 				break;
@@ -913,21 +913,21 @@ function tokenizeAssemblyIf(_AST){
 	return tokenSequence;
 }
 
-function tokenizeAssemblyFunctionDefinition(_AST){
+function tokenizeAssemblyFunctionDefinition(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'function' + ' ' + global.identifier_dict[_AST.type][_AST.name]);
 	tokenSequence += (' ' + '(');
-	if(_AST.arguments.length != 0){
+	if(_AST.arguments.length != 0) {
 		tokenSequence += tokenizeArguments(_AST.arguments);
 	}
 	tokenSequence += (' ' + ')');
-	if(_AST.returnArguments.length != 0){
+	if(_AST.returnArguments.length != 0) {
     	tokenSequence += (' ' + 'returns' + ' ' + '(');
 		tokenSequence += tokenizeParameters(_AST.returnArguments);
 		tokenSequence += (' ' + ')');
 	}
-	if(_AST.body != null){
-		switch(_AST.body.type){
+	if(_AST.body != null) {
+		switch(_AST.body.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.body);
 				break;
@@ -937,11 +937,11 @@ function tokenizeAssemblyFunctionDefinition(_AST){
 	}
 	return tokenSequence;
 }
-function tokenizeAssemblyFor(_AST){
+function tokenizeAssemblyFor(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'for');
-	if(_AST.pre != null){
-		switch(_AST.pre.type){
+	if(_AST.pre != null) {
+		switch(_AST.pre.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.pre);
 				break;
@@ -949,11 +949,11 @@ function tokenizeAssemblyFor(_AST){
 				throw "error";
 		}
 	}
-	if(_AST.condition != null){
+	if(_AST.condition != null) {
 		tokenSequence += tokenizeCondition(_AST.condition);
 	}
-	if(_AST.post != null){
-		switch(_AST.post.type){
+	if(_AST.post != null) {
+		switch(_AST.post.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.post);
 				break;
@@ -961,8 +961,8 @@ function tokenizeAssemblyFor(_AST){
 				throw "error";
 		}
 	}
-	if(_AST.body != null){
-		switch(_AST.body.type){
+	if(_AST.body != null) {
+		switch(_AST.body.type) {
 			case 'AssemblyBlock':
 				tokenSequence += tokenizeAssemblyBlock(_AST.body);
 				break;
@@ -975,19 +975,19 @@ function tokenizeAssemblyFor(_AST){
 
 
 
-function tokenizeHexNumber(_AST){
+function tokenizeHexNumber(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.value]);
 }
 
-function tokenizeDecimalNumber(_AST){
+function tokenizeDecimalNumber(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.value]);
 }
 
-function tokenizeVariableDeclarationStatement(_AST){
+function tokenizeVariableDeclarationStatement(_AST) {
 	var tokenSequence = '';
-	for(var i =0; i < _AST.variables.length; i++){
-		if(_AST.variables[i] != null){
-			switch(_AST.variables[i].type){
+	for(var i =0; i < _AST.variables.length; i++) {
+		if(_AST.variables[i] != null) {
+			switch(_AST.variables[i].type) {
 				case 'VariableDeclaration':
 					tokenSequence += tokenizeVariableDeclaration(_AST.variables[i]);
 					break;
@@ -996,32 +996,32 @@ function tokenizeVariableDeclarationStatement(_AST){
 			}
 		}
 	}
-	if(_AST.initialValue != null){
+	if(_AST.initialValue != null) {
 		tokenSequence += (' ' + '=');
 		tokenSequence += tokenizeExpression(_AST.initialValue);
 	}
 	return tokenSequence;
 }
 
-function tokenizeInheritanceSpecifier(_AST){
+function tokenizeInheritanceSpecifier(_AST) {
 	var tokenSequence = '';
-	if(_AST.baseName != null){
+	if(_AST.baseName != null) {
 		tokenSequence += tokenizeTypeName(_AST.baseName);
 	}
-	if(_AST.arguments.length != 0){
+	if(_AST.arguments.length != 0) {
 		tokenSequence += tokenizeArguments(_AST.arguments);
 	}
 	return tokenSequence;
 }
 
-function tokenizeUserDefinedTypeName(_AST){
+function tokenizeUserDefinedTypeName(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.namePath]);
 }
 
-function tokenizeModifierInvocation(_AST){
+function tokenizeModifierInvocation(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + global.identifier_dict[_AST.type][_AST.name]);
-	if(_AST.arguments != null){
+	if(_AST.arguments != null) {
 		tokenSequence += (' ' + '(');
 		tokenSequence += tokenizeArguments(_AST.arguments);
 		tokenSequence += (' ' + ')');
@@ -1029,22 +1029,22 @@ function tokenizeModifierInvocation(_AST){
 	return tokenSequence;
 }
 
-function tokenizeMapping(_AST){
+function tokenizeMapping(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'mapping' + ' ' + '(');
-	if(_AST.keyType != null){
+	if(_AST.keyType != null) {
 		tokenSequence += tokenizeTypeName(_AST.keyType);
 	}
 	tokenSequence += (' ' + '=>');
-	if(_AST.valueType != null){
+	if(_AST.valueType != null) {
 		tokenSequence += tokenizeTypeName(_AST.valueType);
 	}
 	tokenSequence += (' ' + ')');
 	return tokenSequence;
 }
 
-function tokenizeTypeName(_AST){
-	switch(_AST.type){
+function tokenizeTypeName(_AST) {
+	switch(_AST.type) {
 		case 'ArrayTypeName':
 			return tokenizeArrayTypeName(_AST);
 		case 'ElementaryTypeName':
@@ -1063,55 +1063,55 @@ function tokenizeTypeName(_AST){
 	}
 }
 
-function tokenizeHexLiteral(_AST){
+function tokenizeHexLiteral(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.value]);
 }
 
-function tokenizeEnumValue(_AST){
+function tokenizeEnumValue(_AST) {
 	return (' ' + global.identifier_dict[_AST.type][_AST.name]);
 }
 
-function tokenizeConditional(_AST){
+function tokenizeConditional(_AST) {
 	var tokenSequence = '';
-	if(_AST.condition != null){
+	if(_AST.condition != null) {
 		tokenSequence += tokenizeExpression(_AST.condition);
 	}
 	tokenSequence += (' ' + '?');
-	if(_AST.trueExpression != null){
+	if(_AST.trueExpression != null) {
 		tokenSequence += tokenizeExpression(_AST.trueExpression);
 	}
 	tokenSequence += (' ' + ':');
-	if(_AST.falseExpression != null){
+	if(_AST.falseExpression != null) {
 		tokenSequence += tokenizeExpression(_AST.falseExpression);
 	}
     return tokenSequence;
 }
 
-function tokenizeDoWhileStatement(_AST){
+function tokenizeDoWhileStatement(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'do');
-	if(_AST.body.type == 'Block'){
+	if(_AST.body.type == 'Block') {
 		tokenSequence += tokenizeBlock(_AST.body);
 	}else{
 		tokenSequence += tokenizeStatement(_AST.body);
 	}
 	tokenSequence += (' ' + 'while' + ' ' + '(');
-	if(_AST.condition != null){
+	if(_AST.condition != null) {
 		tokenSequence += tokenizeCondition(_AST.condition);
 	}
 	tokenSequence += (' ' + ')');
 	return tokenSequence;
 }
 
-function tokenizeImportDirective(_AST){
+function tokenizeImportDirective(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'import');
-	if(_AST.unitAlias != null){
+	if(_AST.unitAlias != null) {
 		throw "error";
 	}
-	if(_AST.symbolAliases != null){
+	if(_AST.symbolAliases != null) {
 		tokenSequence += (' ' + '{');
-		for(var i = 0; i < _AST.symbolAliases.length; i++){
+		for(var i = 0; i < _AST.symbolAliases.length; i++) {
 			tokenSequence += _AST.symbolAliases[i][0];
 		}
 		tokenSequence += (' ' + '}' + ' ' + 'from');
@@ -1120,20 +1120,20 @@ function tokenizeImportDirective(_AST){
 	return tokenSequence;
 }
 
-function tokenizeFunctionTypeName(_AST){
+function tokenizeFunctionTypeName(_AST) {
 	var tokenSequence = '';
 	tokenSequence += (' ' + 'function' + ' ' + '(');
-	if(_AST.parameterTypes.length != 0){
+	if(_AST.parameterTypes.length != 0) {
 		tokenSequence += tokenizeParameters(_AST.parameterTypes);
 	}
 	tokenSequence += (' ' + ')');
-	if(_AST.stateMutability != null){
+	if(_AST.stateMutability != null) {
 		tokenSequence += (' ' + _AST.stateMutability);
 	}
-	if(_AST.visibility != null){
+	if(_AST.visibility != null) {
 		tokenSequence += (' ' + _AST.visibility);
 	}
-	if(_AST.returnTypes.length != 0){
+	if(_AST.returnTypes.length != 0) {
 		tokenSequence += (' ' + 'returns' + ' ' + '(');
 		tokenSequence += (' ' + _AST.visibility);
 		tokenSequence += (' ' + ')');
