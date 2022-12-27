@@ -1,4 +1,5 @@
 from utils2 import *
+from genetic import *
 
 class Config_RL_multistep:
     def __init__(self):
@@ -98,5 +99,37 @@ if __name__ == "__main__":
             else:
                 print('model NOT update. the {0}-th epoch. positive reward / total : {1} / {2}'.format(epoch, positive_repair, len(names)))
 
+                
+    if model_name == 'mutation':
+        with open("dataset_vul/newALLBUGS/dicts/v_code_w2i.pkl", 'rb') as tf, open("dataset_vul/newALLBUGS/dicts/v_code_i2w.pkl", 'rb') as tf2:
+            val_code_w2i, val_code_i2w = pickle.load(tf), pickle.load(tf2)
+        valid_code_dir = "dataset_vul/newALLBUGS/validation/contract/"
+        
+        for contract_name in os.listdir(valid_code_dir):
+            print("processing {}:".format(contract_name))
+            valid_code_path = valid_code_dir + contract_name
+            addr = contract_name.split('.sol')[0]
+            mutation_path = valid_code_path
+            gen = 0
+            while True:
+                print("processing the {}-th generation mutation...".format(gen))
+                repair_dir = 'dataset_vul/newALLBUGS/validation/genetic/{}/{}/'.format(addr, gen)
+                os.makedirs(repair_dir, exist_ok=True)
+                mutation_token(mutation_path, val_code_w2i, val_code_i2w, gen, logger)
+                patch, patch_remove = fitness_function(repair_dir, valid_code_path, logger)
 
+                if len(patch_remove) < len(os.listdir(repair_dir)):
+                    for remove_contract_path in patch_remove:
+                        os.remove(remove_contract_path)
+                    break
+                elif len(patch_remove) == len(os.listdir(repair_dir)):
+                    if len(os.listdir(repair_dir)) == 0:
+                        break
+                    sorted_list_patch = sorted(patch.items(), key=lambda m: m[1], reverse=True)
+                    top15 = dict(sorted_list_patch[:15])
+                    for name in os.listdir(repair_dir):
+                        remove_contract_path = repair_dir + name
+                        if remove_contract_path not in top15.keys():
+                            os.remove(remove_contract_path)
+                    mutation_path = sorted_list_patch[0][0]
 
