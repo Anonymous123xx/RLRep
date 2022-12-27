@@ -1,5 +1,6 @@
 from utils2 import *
 from genetic import *
+import sys
 
 class Config_RL_multistep:
     def __init__(self):
@@ -26,8 +27,9 @@ class Config_RL_multistep:
 
 
 if __name__ == "__main__":
-    model_name = 'multistep_RLRep'
-    path = 'dataset_vul/newALLBUGS'
+    model_name = sys.argv[1]  # "multistep_RLRep" or "mutation"
+    path = sys.argv[2]  # "dataset_vul/newALLBUGS"
+    
     logger = get_logger('dataset_vul/newALLBUGS/log/{}_logging.txt'.format(model_name))
     with open('{}/code_w2i.pkl'.format(path), 'rb') as f, open('{}/ast_w2i.pkl'.format(path), 'rb') as f2:
         code_w2i = pickle.load(f)
