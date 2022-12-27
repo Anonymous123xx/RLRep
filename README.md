@@ -22,7 +22,7 @@ The source code and dataset are opened.
 
 `code2ast.js` and `node_modules/`: convert source code to a preorder traversal sequence of AST.
 
-`dataset_vul/`: unzip it to get the folder `dataset_vul/`
+`dataset_vul.tar.gz`: unzip it to get the folder `dataset_vul/`. It includes `contract`(the source code of the buggy contract), `ast`(the preorder sequence of the abstract syntax tree of the buggy function) and `threelines-tokenseq`(the previous line, the next line and the buggy line).
 
 `requirements.txt`: a file listing all the dependencies for RLRepair
 
