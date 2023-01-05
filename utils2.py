@@ -98,13 +98,19 @@ def fitness_function2(original_contract, repair_contract) -> float:
             reward += 0.025
         else:
             reward -= 0.025
-    cache = True
-    original_entropy = get_entropy(original_contract, cache)
-    repair_entropy = get_entropy(repair_contract, cache)
-    if abs(original_entropy - 3.2) > abs(repair_entropy - 3.2):
-        reward += 0.02
+    contract_sims = get_similarity(original_contract, first=False)
+    repair_sims = get_similarity(repair_contract, first=False)
+    if repair_sims < contract_sims:
+        reward -= 0.014
     else:
-        reward -= 0.02
+        reward += 0.014
+    cache = True
+    original_entropy = get_entropy(original_contract, cache, first=False)
+    repair_entropy = get_entropy(repair_contract, cache, first=False)
+    if abs(original_entropy - 3.2) > abs(repair_entropy - 3.2):
+        reward += 0.014
+    else:
+        reward -= 0.014     
     if reward > 1:
         reward = 1
     if reward == 0.0:
