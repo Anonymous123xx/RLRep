@@ -24,7 +24,7 @@ The source code and dataset are opened.
 
 `genetic.py`: the implement of the search-and-genetic-algorithm-based smart contract repair approach proposed by [Yu et al.](https://dl.acm.org/doi/abs/10.1145/3402450)
 
-`dataset_vul.tar.gz`: unzip it to get the folder `dataset_vul/`. It includes `contract/`(the source code of the buggy contract labeled with fault location), `ast/`(the preorder sequence of the abstract syntax tree of the buggy function) and `threelines-tokenseq/`(the previous line, the next line and the buggy line).
+`dataset_vul.tar.gz`: unzip it to get the folder `dataset_vul/`. It includes `full_contract_dataset/` (853 vulnerable smart contracts), `contract/`(the source code of the buggy contract labeled with fault location), `ast/`(the preorder sequence of the abstract syntax tree of the buggy function), `threelines-tokenseq/`(the previous line, the next line and the buggy line) and `repair_contract/` (the correct generated patches).
 
 `requirements.txt`: a file listing all the dependencies for RLRepair
 
