@@ -46,7 +46,38 @@ pip install -r requirements.txt
 - data for pretraining: `pretrain/` and `pretrain_label/`
 - data for validation: `validation/`
 
-4. training and validation
+4. Add new methods
+
+Enter the `antlr4` package and find the `RuleContext.py` and `Trees.py` (Some IDEs such as PyCharm can implement this process).
+
+Add the method code below in the `RuleContext` class in `RuleContext.py`.
+```
+def toCodeSequence(self, ruleNames:list=None, recog:Parser=None):
+    return Trees.toCodeSequence(self, ruleNames=ruleNames, recog=recog)
+```
+
+Add the method code below in the `Trees` class in `Trees.py`.
+```
+@classmethod
+def toCodeSequence(cls, t:Tree, ruleNames:list=None, recog:Parser=None):
+    if recog is not None:
+        ruleNames = recog.ruleNames
+    s = escapeWhitespace(cls.getNodeText(t, ruleNames), False)
+    if t.getChildCount()==0:
+        return s
+    with StringIO() as buf:
+        buf.write(s)
+        buf.write(' ')
+        for i in range(0, t.getChildCount()):
+            if i > 0:
+                buf.write(' ')
+            buf.write(cls.toCodeSequence(t.getChild(i), ruleNames))
+  
+        return buf.getvalue()
+```
+
+
+5. training and validation
 
 ```shell
 python main.py [model_name] [dataset_path]
@@ -56,7 +87,7 @@ python main.py multistep_RLRep dataset_vul/newALLBUGS
 python main.py mutation dataset_vul/newALLBUGS
 ```
 
-5. result
+6. result
 
 At last, result can be got in `dataset_vul/newALLBUGS/validation/result/`.
 
